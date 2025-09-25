@@ -11,7 +11,6 @@ module data_mem (
     reg [31:0] memory [255:0];
     
     initial begin
-        $readmemh("memory.h", memory);
         #2000; // time of program finish
         $writememh("memory_dump.hex", uut.u_dmem.memory);
     end
