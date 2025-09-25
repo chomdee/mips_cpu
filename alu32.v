@@ -1,3 +1,6 @@
+`timescale 1ns/1ps
+`default_nettype none
+
 module alu32 (
     input [3:0] ctrl_aluctrl_ex, 
     input [31:0] operand1, operand2, 

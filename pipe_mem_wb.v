@@ -1,3 +1,6 @@
+`timescale 1ns/1ps
+`default_nettype none
+
 module pipe_mem_wb (
     input clk,
     input ctrl_memtoreg_mem, ctrl_regwrite_mem,

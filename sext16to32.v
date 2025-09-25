@@ -1,3 +1,6 @@
+`timescale 1ns/1ps
+`default_nettype none
+
 module sext16to32 (
     imm16_id,
     imm32_id

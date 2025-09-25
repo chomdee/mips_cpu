@@ -1,3 +1,6 @@
+`timescale 1ns/1ps
+`default_nettype none
+
 module reg_file (
     input clk,
     input [4:0] rs_id, rt_id, writereg_wb, // the register numbers to read & write

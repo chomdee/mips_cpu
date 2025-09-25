@@ -1,3 +1,6 @@
+`timescale 1ns/1ps
+`default_nettype none
+
 module data_mem (
     input clk,
     input ctrl_memread_mem,
@@ -12,7 +15,7 @@ module data_mem (
     
     initial begin
         #2000; // time of program finish
-        $writememh("memory_dump.hex", uut.u_dmem.memory);
+        $writememh("memory/memory_dump.hex", uut.u_dmem.memory);
     end
 
     assign readdata_mem = (ctrl_memread_mem) ? memory[aluout_mem[9:2]] : 32'd0;

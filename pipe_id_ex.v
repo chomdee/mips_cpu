@@ -1,3 +1,6 @@
+`timescale 1ns/1ps
+`default_nettype none
+
 module pipe_id_ex (
     input clk,
     input ctrl_regdst_id, ctrl_branch_id, ctrl_memread_id, ctrl_memtoreg_id, ctrl_memwrite_id, ctrl_alusrc_id, ctrl_regwrite_id,

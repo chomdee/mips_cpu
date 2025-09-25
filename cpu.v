@@ -1,3 +1,6 @@
+`timescale 1ns/1ps
+`default_nettype none
+
 module cpu (
     input wire clk,
     output wire [31:0] instr

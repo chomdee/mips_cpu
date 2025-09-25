@@ -1,3 +1,6 @@
+`timescale 1ns/1ps
+`default_nettype none
+
 module ctrl_alu (
     input  [1:0] ctrl_aluop_ex,
     input  [5:0] funct_ex,

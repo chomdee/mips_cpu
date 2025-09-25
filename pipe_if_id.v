@@ -1,3 +1,6 @@
+`timescale 1ns/1ps
+`default_nettype none
+
 module pipe_if_id (
     input clk,
     input [31:0] pc_plus4_if,

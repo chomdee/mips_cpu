@@ -1,0 +1,11 @@
+addi $t1, $zero, 2     
+add  $t3, $t1, $t2
+sub  $t3, $t4, $t5
+and  $t6, $t7, $t8
+or   $t9, $t1, $t2
+sw   $t1, 0($t0)
+lw   $t8, 0($t0)        
+addi $t1, $t1, -1        
+addi $t8, $t8, 10        
+beq  $t1, $zero, +2      
+beq  $zero, $zero, -10  

@@ -1,3 +1,6 @@
+`timescale 1ns/1ps
+`default_nettype none
+
 module pipe_ex_mem (
     input clk,
     input ctrl_branch_ex, ctrl_memread_ex, ctrl_memtoreg_ex, ctrl_memwrite_ex, ctrl_regwrite_ex,

@@ -1,3 +1,6 @@
+`timescale 1ns/1ps
+`default_nettype none
+
 module instr_decoder (
     input  wire [31:0] instr_id,
 
