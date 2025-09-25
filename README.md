@@ -2,7 +2,7 @@
 
 A simple MIPS 5-stage pipelined CPU.
 
-**Branch:** `no_forwarding` (no forwarding, no branch prediction)
+**Branch:** `basic_pipeline` (no forwarding, no branch prediction)
 
 ## Pipeline Diagram
 ![Pipeline Diagram](diagram.png)
@@ -94,7 +94,7 @@ AD090000 sw $t1,0($t0) \
 
 **Behavior:** uses `$t1` as a loop counter; loop body executes **exactly 2 times**, then exits.
 
-## Pipeline Caveats (`no_forwarding`)
+## Pipeline Caveats (`basic_pipeline`)
 - **No hazard unit:** ensure **≥ 2 independent instructions** between producer and consumer.
   - RAW (reg write → next reads)
   - **load-use** (`lw` → next uses): keep at least **2 cycles** of separation
