@@ -33,7 +33,7 @@ cpu.v \
 instr_mem.v \
 data_mem.v \
 reg_file.v \
-ctrl_main.v \ 
+ctrl_main.v  
 ctrl_alu.v \
 alu32.v \
 branch_adder.v \
@@ -45,9 +45,14 @@ cpu_tb.v \
 Makefile \
 README.md \
 memory/ \
-program.hex # machine code executed by instr_mem \
-program.asm # assembly version of program.hex \
-memory_dump.hex # data memory dump at end of sim \
+&nbsp;&nbsp;&nbsp;&nbsp;program.hex # machine code executed by instr_mem \
+&nbsp;&nbsp;&nbsp;&nbsp;program.asm # assembly version of program.hex \
+&nbsp;&nbsp;&nbsp;&nbsp;memory_dump.hex # data memory dump at end of sim 
+
+  > Notes  
+> These codes are not necessarily optimized for efficiency.  
+> Instead, each unit is separated into its own file to make the design easier to understand.
+
 
 
 ---
@@ -89,7 +94,7 @@ AD090000 sw $t1,0($t0) \
 2129FFFF addi $t1,$t1,-1 \
 2318000A addi $t8,$t8,10 \
 11200002 beq $t1,$zero,+2 \
-1000FFF6 beq $zero,$zero,-10 \
+1000FFF6 beq $zero,$zero,-10 
 
 
 **Behavior:** uses `$t1` as a loop counter; loop body executes **exactly 2 times**, then exits.
