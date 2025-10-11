@@ -3,6 +3,7 @@
 
 module pipe_if_id (
     input clk,
+    input ifid_write,
     input [31:0] pc_plus4_if,
     input [31:0] instr_if,
 
@@ -11,8 +12,10 @@ module pipe_if_id (
 );
     
     always @(posedge clk) begin
-        pc_plus4_id <= pc_plus4_if;
-        instr_id <= instr_if;
+        if (ifid_write) begin
+            pc_plus4_id <= pc_plus4_if;
+            instr_id <= instr_if;
+        end
     end
     
 endmodule

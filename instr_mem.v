@@ -9,7 +9,7 @@ module instr_mem (
     reg [31:0] memory [0:255];  // 256 word = 1 KB
 
     initial begin
-        $readmemh("memory/program.hex", memory);
+        $readmemh("memory/program3.hex", memory);
     end
 
     always @(*) begin

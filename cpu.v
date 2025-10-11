@@ -11,19 +11,20 @@ module cpu (
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // 1) pc
 
+    initial begin
+        pc_if = RESET_PC;
+    end
+
     localparam [31:0] RESET_PC       = 32'h0000_0000;  // starting address
     localparam        PCSRC_PLUS4    = 2'd0;
     localparam        PCSRC_BRANCH   = 2'd1;
-
-    initial begin
-        pc_if = RESET_PC; 
-    end
 
     reg  [31:0] pc_if;
     wire [1:0]  pcsrc_if; // 0: pc+4, 1: branch
     wire [31:0] pc_plus4_if;
     wire [31:0] next_pc_if;
     wire branch_taken; // decided on MEM stage
+    wire pc_write;
 
     assign pc_plus4_if = pc_if + 32'd4;
 
@@ -31,7 +32,8 @@ module cpu (
     assign next_pc_if = (pcsrc_if == PCSRC_PLUS4) ? pc_plus4_if : branch_target_mem;
 
     always @(posedge clk) begin
-        pc_if <= next_pc_if;
+        if (pc_write) 
+            pc_if <= next_pc_if;
     end
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -52,8 +54,11 @@ module cpu (
     wire [31:0] pc_plus4_id;
     wire [31:0] instr_id;
 
+    wire ifid_write;
+
     pipe_if_id u_ifid (
         .clk(clk),
+        .ifid_write(ifid_write),
         .pc_plus4_if(pc_plus4_if), 
         .instr_if(instr_if),
 
@@ -101,6 +106,53 @@ module cpu (
         .readdata1_id(readdata1_id), .readdata2_id(readdata2_id)
     );
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // 6) main control unit (creating 9 control signals)
+
+    wire ctrl_regdst;
+    wire ctrl_jump;
+    wire ctrl_branch;
+    wire ctrl_memread;
+    wire ctrl_memtoreg;
+    wire ctrl_memwrite;
+    wire ctrl_alusrc;
+    wire ctrl_regwrite;
+
+    wire [1:0] ctrl_aluop;
+
+    ctrl_main u_mcu (
+        .opcode_id(opcode_id),
+        .ctrl_regdst(ctrl_regdst), .ctrl_jump(ctrl_jump), .ctrl_branch(ctrl_branch), .ctrl_memread(ctrl_memread), .ctrl_memtoreg(ctrl_memtoreg), .ctrl_memwrite(ctrl_memwrite), .ctrl_alusrc(ctrl_alusrc), .ctrl_regwrite(ctrl_regwrite),
+        .ctrl_aluop(ctrl_aluop)
+    );
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // 7) flush MUX
+    wire ctrl_jump_id;
+
+    mux_flush u_muxflush (
+        .ctrl_flush(ctrl_flush),
+        .ctrl_regdst(ctrl_regdst), .ctrl_jump(ctrl_jump), .ctrl_branch(ctrl_branch), .ctrl_memread(ctrl_memread), .ctrl_memtoreg(ctrl_memtoreg), .ctrl_memwrite(ctrl_memwrite), .ctrl_alusrc(ctrl_alusrc), .ctrl_regwrite(ctrl_regwrite),
+        .ctrl_aluop(ctrl_aluop),
+
+        .ctrl_regdst_id(ctrl_regdst_id), .ctrl_jump_id(ctrl_jump_id), .ctrl_branch_id(ctrl_branch_id), .ctrl_memread_id(ctrl_memread_id), .ctrl_memtoreg_id(ctrl_memtoreg_id), .ctrl_memwrite_id(ctrl_memwrite_id), .ctrl_alusrc_id(ctrl_alusrc_id), .ctrl_regwrite_id(ctrl_regwrite_id),
+        .ctrl_aluop_id(ctrl_aluop_id)
+    );
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // 8) hazard detection unit
+
+    wire ctrl_flush;
+
+    hazard_detection_unit u_hdu (
+        .ctrl_memread_ex(ctrl_memread_ex),
+        .rs_id(rs_id), .rt_id(rt_id), .rt_ex(rt_ex),
+
+        .ctrl_flush(ctrl_flush),
+        .pc_write(pc_write),
+        .ifid_write(ifid_write)
+    );
+
 // ID/EX pipeline register
     // --------------------------------------
 
@@ -115,7 +167,8 @@ module cpu (
     wire [31:0] readdata1_ex, readdata2_ex;
     wire [31:0] imm32_ex;
     wire [5:0] funct_ex;
-    wire [4:0] rt_ex, rd_ex;
+    wire [4:0] shamt_ex;
+    wire [4:0] rt_ex, rd_ex, rs_ex;
 
     pipe_id_ex u_idex (
         .clk(clk),
@@ -125,7 +178,8 @@ module cpu (
         .readdata1_id(readdata1_id), .readdata2_id(readdata2_id),
         .imm32_id(imm32_id),
         .funct_id(funct_id),
-        .rt_id(rt_id), .rd_id(rd_id),
+        .shamt_id(shamt_id),
+        .rt_id(rt_id), .rd_id(rd_id), .rs_id(rs_id),
 
         .ctrl_regdst_ex(ctrl_regdst_ex), .ctrl_branch_ex(ctrl_branch_ex), .ctrl_memread_ex(ctrl_memread_ex), .ctrl_memtoreg_ex(ctrl_memtoreg_ex), .ctrl_memwrite_ex(ctrl_memwrite_ex), .ctrl_alusrc_ex(ctrl_alusrc_ex), .ctrl_regwrite_ex(ctrl_regwrite_ex),
         .ctrl_aluop_ex(ctrl_aluop_ex),
@@ -133,24 +187,14 @@ module cpu (
         .readdata1_ex(readdata1_ex), .readdata2_ex(readdata2_ex),
         .imm32_ex(imm32_ex),
         .funct_ex(funct_ex),
-        .rt_ex(rt_ex), .rd_ex(rd_ex)
+        .shamt_ex(shamt_ex),
+        .rt_ex(rt_ex), .rd_ex(rd_ex), .rs_ex(rs_ex)
     );
 
 //---------------------------- EX stage ------------------------------
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // 6) main control unit (creating 9 control signals)
-
-    wire ctrl_jump_id;
-
-    ctrl_main u_mcu (
-        .opcode_id(opcode_id),
-        .ctrl_regdst_id(ctrl_regdst_id), .ctrl_jump_id(ctrl_jump_id), .ctrl_branch_id(ctrl_branch_id), .ctrl_memread_id(ctrl_memread_id), .ctrl_memtoreg_id(ctrl_memtoreg_id), .ctrl_memwrite_id(ctrl_memwrite_id), .ctrl_alusrc_id(ctrl_alusrc_id), .ctrl_regwrite_id(ctrl_regwrite_id),
-        .ctrl_aluop_id(ctrl_aluop_id)
-    );
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // 7) ALU control 
+    // 9) ALU control 
 
     wire [3:0] ctrl_aluctrl_ex;
 
@@ -161,20 +205,62 @@ module cpu (
     );
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // 8) ALU 
+    // 10) forwarding unit
 
+    wire [1:0] forwardA;
+    wire [1:0] forwardB;
+    wire [4:0] rd_mem;
+    wire [4:0] rd_wb;
+
+    forwarding_unit u_fwding_unit (
+        .rs_ex(rs_ex), .rt_ex(rt_ex), .writereg_mem(writereg_mem), .writereg_wb(writereg_wb),
+        .ctrl_regwrite_mem(ctrl_regwrite_mem), .ctrl_regwrite_wb(ctrl_regwrite_wb),
+        .forwardA(forwardA), .forwardB(forwardB)
+    );
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // 11) operand1 MUX 
+
+    wire [31:0] operand1;
+
+    mux_operand1 u_muxop1 (
+        .forwardA(forwardA),
+        .readdata1_ex(readdata1_ex),
+        .datatowritereg(datatowritereg),
+        .aluout_mem(aluout_mem),
+        .operand1(operand1)
+    );
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // 12) operand2 MUX 
+
+
+    wire [31:0] operand2_forwarded;
     wire [31:0] operand2;
-    assign operand2 = (ctrl_alusrc_ex) ? imm32_ex : readdata2_ex;
+
+    mux_operand2 u_muxop2 (
+        .forwardB(forwardB),
+        .readdata2_ex(readdata2_ex),
+        .datatowritereg(datatowritereg),
+        .aluout_mem(aluout_mem),
+        .operand2_forwarded(operand2_forwarded)
+    );
+
+    assign operand2 = (ctrl_alusrc_ex) ? imm32_ex : operand2_forwarded;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // 13) ALU 
 
     alu32 u_alu (
         .ctrl_aluctrl_ex(ctrl_aluctrl_ex),
-        .operand1(readdata1_ex), .operand2(operand2), // operand1 is always readdata1_ex(rs_id value)
+        .operand1(operand1), .operand2(operand2),
+        .shamt_ex(shamt_ex), 
         .aluout_ex(aluout_ex),
         .ctrl_zero_ex(ctrl_zero_ex)
     );
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // 9) branch target adder
+    // 14) branch target adder
 
     branch_adder u_btadd (
         .imm32_ex(imm32_ex),
@@ -183,7 +269,6 @@ module cpu (
     );
 
     assign writereg_ex = (ctrl_regdst_ex) ? rd_ex : rt_ex; 
-
 
     // EX/MEM pipeline register
     // --------------------------------------
@@ -194,12 +279,14 @@ module cpu (
     wire [31:0] writedata_ex;
     wire [4:0] writereg_ex;
 
+
     wire ctrl_branch_mem, ctrl_memread_mem, ctrl_memtoreg_mem, ctrl_memwrite_mem, ctrl_regwrite_mem;
     wire [31:0] branch_target_mem;
     wire ctrl_zero_mem;
     wire [31:0] aluout_mem;
     wire [31:0] writedata_mem;
     wire [4:0] writereg_mem;
+
 
     pipe_ex_mem u_exmem (
         .clk(clk),
@@ -209,20 +296,22 @@ module cpu (
         .aluout_ex(aluout_ex),
         .writedata_ex(writedata_ex),
         .writereg_ex(writereg_ex),
+        .rd_ex(rd_ex),
 
         .ctrl_branch_mem(ctrl_branch_mem), .ctrl_memread_mem(ctrl_memread_mem), .ctrl_memtoreg_mem(ctrl_memtoreg_mem), .ctrl_memwrite_mem(ctrl_memwrite_mem), .ctrl_regwrite_mem(ctrl_regwrite_mem),
         .branch_target_mem(branch_target_mem),
         .ctrl_zero_mem(ctrl_zero_mem),
         .aluout_mem(aluout_mem),
         .writedata_mem(writedata_mem),
-        .writereg_mem(writereg_mem)
+        .writereg_mem(writereg_mem),
+        .rd_mem(rd_mem)
     );
 
 //---------------------------- MEM stage ------------------------------
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // 10) data memory (MEM stage)
-
+    // 15) data memory 
+    
     assign writedata_ex = readdata2_ex;
 
     data_mem u_dmem (
@@ -246,21 +335,21 @@ module cpu (
         .readdata_mem(readdata_mem),
         .aluout_mem(aluout_mem),
         .writereg_mem(writereg_mem),
+        .rd_mem(rd_mem),
 
         .ctrl_memtoreg_wb(ctrl_memtoreg_wb), .ctrl_regwrite_wb(ctrl_regwrite_wb),
         .readdata_wb(readdata_wb),
         .aluout_wb(aluout_wb),
-        .writereg_wb(writereg_wb)
+        .writereg_wb(writereg_wb),
+        .rd_wb(rd_wb)
     );
     
 
 //---------------------------- WB stage ------------------------------
 
-    assign branch_taken = ((ctrl_branch_mem === 1'b1) && (ctrl_zero_mem === 1'b1));
-
     wire [31:0] datatowritereg = (ctrl_memtoreg_wb) ? readdata_wb : aluout_wb;
     
-
+    assign branch_taken = ((ctrl_branch_mem === 1'b1) && (ctrl_zero_mem === 1'b1));
    
 
 endmodule

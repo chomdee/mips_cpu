@@ -9,7 +9,8 @@ module pipe_id_ex (
     input [31:0] readdata1_id, readdata2_id,
     input [31:0] imm32_id,
     input [5:0] funct_id,
-    input [4:0] rt_id, rd_id,
+    input [4:0] shamt_id,
+    input [4:0] rt_id, rd_id, rs_id,
     
     output reg ctrl_regdst_ex, ctrl_branch_ex, ctrl_memread_ex, ctrl_memtoreg_ex, ctrl_memwrite_ex, ctrl_alusrc_ex, ctrl_regwrite_ex,
     output reg [1:0] ctrl_aluop_ex,
@@ -17,7 +18,8 @@ module pipe_id_ex (
     output reg [31:0] readdata1_ex, readdata2_ex,
     output reg [31:0] imm32_ex,
     output reg [5:0] funct_ex,
-    output reg [4:0] rt_ex, rd_ex
+    output reg [4:0] shamt_ex,
+    output reg [4:0] rt_ex, rd_ex, rs_ex
 );
 
     always @(posedge clk) begin
@@ -39,6 +41,7 @@ module pipe_id_ex (
         
         rt_ex <= rt_id;
         rd_ex <= rd_id;
+        rs_ex <= rs_id;
     end
     
 endmodule

@@ -5,7 +5,7 @@ A simple MIPS 5-stage pipelined CPU.
 **Branch:** `basic_pipeline` (no forwarding, no branch prediction)
 
 ## Pipeline Diagram
-![Pipeline Diagram](diagram.png)
+![Pipeline Diagram](no_control_hazard.png)
 
 ---
 
