@@ -23,13 +23,13 @@ module cpu (
     wire [1:0]  pcsrc_if; // 0: pc+4, 1: branch
     wire [31:0] pc_plus4_if;
     wire [31:0] next_pc_if;
-    wire branch_taken; // decided on MEM stage
+    wire branch_taken_ex; // decided on EX stage
     wire pc_write;
 
     assign pc_plus4_if = pc_if + 32'd4;
 
-    assign pcsrc_if = (branch_taken) ? PCSRC_BRANCH : PCSRC_PLUS4;
-    assign next_pc_if = (pcsrc_if == PCSRC_PLUS4) ? pc_plus4_if : branch_target_mem;
+    assign pcsrc_if = (branch_taken_ex) ? PCSRC_BRANCH : PCSRC_PLUS4;
+    assign next_pc_if = (pcsrc_if == PCSRC_PLUS4) ? pc_plus4_if : branch_target_ex;
 
     always @(posedge clk) begin
         if (pc_write) 
@@ -45,7 +45,12 @@ module cpu (
         .pc_if(pc_if),
         .instr_if(instr_if)
     );
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
+    wire ctrl_flush_if_id;
+    assign ctrl_flush_if_id = branch_taken_ex;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //  IF/ID pipeline register
     
@@ -58,6 +63,7 @@ module cpu (
 
     pipe_if_id u_ifid (
         .clk(clk),
+        .ctrl_flush_if_id(ctrl_flush_if_id),
         .ifid_write(ifid_write),
         .pc_plus4_if(pc_plus4_if), 
         .instr_if(instr_if),
@@ -129,9 +135,12 @@ module cpu (
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // 7) flush MUX
     wire ctrl_jump_id;
+    wire ctrl_flush_id_ex;
+
+    assign ctrl_flush_id_ex = (ctrl_nop || flush_id_ex);
 
     mux_flush u_muxflush (
-        .ctrl_flush(ctrl_flush),
+        .ctrl_flush_id_ex(ctrl_flush_id_ex),
         .ctrl_regdst(ctrl_regdst), .ctrl_jump(ctrl_jump), .ctrl_branch(ctrl_branch), .ctrl_memread(ctrl_memread), .ctrl_memtoreg(ctrl_memtoreg), .ctrl_memwrite(ctrl_memwrite), .ctrl_alusrc(ctrl_alusrc), .ctrl_regwrite(ctrl_regwrite),
         .ctrl_aluop(ctrl_aluop),
 
@@ -142,16 +151,21 @@ module cpu (
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // 8) hazard detection unit
 
-    wire ctrl_flush;
+    wire ctrl_nop;
 
     hazard_detection_unit u_hdu (
         .ctrl_memread_ex(ctrl_memread_ex),
         .rs_id(rs_id), .rt_id(rt_id), .rt_ex(rt_ex),
 
-        .ctrl_flush(ctrl_flush),
+        .ctrl_nop(ctrl_nop),
         .pc_write(pc_write),
         .ifid_write(ifid_write)
     );
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    wire flush_id_ex;
+    assign flush_id_ex = branch_taken_ex;
 
 // ID/EX pipeline register
     // --------------------------------------
@@ -172,6 +186,7 @@ module cpu (
 
     pipe_id_ex u_idex (
         .clk(clk),
+        .flush_id_ex(flush_id_ex),
         .ctrl_regdst_id(ctrl_regdst_id), .ctrl_branch_id(ctrl_branch_id), .ctrl_memread_id(ctrl_memread_id), .ctrl_memtoreg_id(ctrl_memtoreg_id), .ctrl_memwrite_id(ctrl_memwrite_id), .ctrl_alusrc_id(ctrl_alusrc_id), .ctrl_regwrite_id(ctrl_regwrite_id),
         .ctrl_aluop_id(ctrl_aluop_id),
         .pc_plus4_id(pc_plus4_id),
@@ -269,6 +284,7 @@ module cpu (
     );
 
     assign writereg_ex = (ctrl_regdst_ex) ? rd_ex : rt_ex; 
+    assign branch_taken_ex = ((ctrl_branch_ex === 1'b1) && (ctrl_zero_ex === 1'b1));
 
     // EX/MEM pipeline register
     // --------------------------------------
@@ -280,9 +296,7 @@ module cpu (
     wire [4:0] writereg_ex;
 
 
-    wire ctrl_branch_mem, ctrl_memread_mem, ctrl_memtoreg_mem, ctrl_memwrite_mem, ctrl_regwrite_mem;
-    wire [31:0] branch_target_mem;
-    wire ctrl_zero_mem;
+    wire ctrl_memread_mem, ctrl_memtoreg_mem, ctrl_memwrite_mem, ctrl_regwrite_mem;
     wire [31:0] aluout_mem;
     wire [31:0] writedata_mem;
     wire [4:0] writereg_mem;
@@ -290,17 +304,13 @@ module cpu (
 
     pipe_ex_mem u_exmem (
         .clk(clk),
-        .ctrl_branch_ex(ctrl_branch_ex), .ctrl_memread_ex(ctrl_memread_ex), .ctrl_memtoreg_ex(ctrl_memtoreg_ex), .ctrl_memwrite_ex(ctrl_memwrite_ex), .ctrl_regwrite_ex(ctrl_regwrite_ex),
-        .branch_target_ex(branch_target_ex),
-        .ctrl_zero_ex(ctrl_zero_ex),
+        .ctrl_memread_ex(ctrl_memread_ex), .ctrl_memtoreg_ex(ctrl_memtoreg_ex), .ctrl_memwrite_ex(ctrl_memwrite_ex), .ctrl_regwrite_ex(ctrl_regwrite_ex),
         .aluout_ex(aluout_ex),
         .writedata_ex(writedata_ex),
         .writereg_ex(writereg_ex),
         .rd_ex(rd_ex),
 
-        .ctrl_branch_mem(ctrl_branch_mem), .ctrl_memread_mem(ctrl_memread_mem), .ctrl_memtoreg_mem(ctrl_memtoreg_mem), .ctrl_memwrite_mem(ctrl_memwrite_mem), .ctrl_regwrite_mem(ctrl_regwrite_mem),
-        .branch_target_mem(branch_target_mem),
-        .ctrl_zero_mem(ctrl_zero_mem),
+        .ctrl_memread_mem(ctrl_memread_mem), .ctrl_memtoreg_mem(ctrl_memtoreg_mem), .ctrl_memwrite_mem(ctrl_memwrite_mem), .ctrl_regwrite_mem(ctrl_regwrite_mem),
         .aluout_mem(aluout_mem),
         .writedata_mem(writedata_mem),
         .writereg_mem(writereg_mem),
@@ -311,7 +321,7 @@ module cpu (
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // 15) data memory 
-    
+
     assign writedata_ex = readdata2_ex;
 
     data_mem u_dmem (
@@ -348,8 +358,5 @@ module cpu (
 //---------------------------- WB stage ------------------------------
 
     wire [31:0] datatowritereg = (ctrl_memtoreg_wb) ? readdata_wb : aluout_wb;
-    
-    assign branch_taken = ((ctrl_branch_mem === 1'b1) && (ctrl_zero_mem === 1'b1));
    
-
 endmodule

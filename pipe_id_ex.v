@@ -3,6 +3,7 @@
 
 module pipe_id_ex (
     input clk,
+    input flush_id_ex,
     input ctrl_regdst_id, ctrl_branch_id, ctrl_memread_id, ctrl_memtoreg_id, ctrl_memwrite_id, ctrl_alusrc_id, ctrl_regwrite_id,
     input [1:0] ctrl_aluop_id,
     input [31:0] pc_plus4_id,

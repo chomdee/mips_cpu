@@ -2,7 +2,7 @@
 `default_nettype none
 
 module mux_flush (
-    input ctrl_flush,
+    input ctrl_flush_id_ex,
     input ctrl_regdst,
     input ctrl_jump,
     input ctrl_branch,
@@ -25,7 +25,7 @@ module mux_flush (
 );
     always @(*) begin
 
-        if(ctrl_flush) begin
+        if(ctrl_flush_id_ex) begin
             ctrl_regdst_id = 0;
             ctrl_jump_id = 0;
             ctrl_branch_id = 0;

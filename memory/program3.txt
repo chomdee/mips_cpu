@@ -1,2 +1,4 @@
 add $t1, $t0, $t1
 beq $t2, $t1, -2
+sub $t2, $t1, $t0
+and $t3, $t1, $t2
