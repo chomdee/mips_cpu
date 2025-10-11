@@ -1,108 +1,78 @@
-# MIPS 5-Stage Pipeline (IF–ID–EX–MEM–WB)
+# 🧠 MIPS 5-Stage Pipeline (IF–ID–EX–MEM–WB)
 
-A simple MIPS 5-stage pipelined CPU.
+A simple **MIPS 5-stage pipelined CPU** implemented in Verilog.
 
-**Branch:** `basic_pipeline` (no forwarding, no branch prediction)
-
-## Pipeline Diagram
-![Pipeline Diagram](no_control_hazard.png)
+**Branch:** `main` (with data forwarding and untaken branch prediction)
 
 ---
 
-## Features
-- Classic 5 stages: **IF → ID → EX → MEM → WB**
-- **No forwarding**, **no branch prediction**
-- Branch decision currently in **MEM** stage (fall-through needs flush)
-- Testbench dumps **VCD** and data memory
+##  Pipeline Overview
+![Pipeline Diagram](pipeline_diagram.png)
 
 ---
 
-## Supported Instructions (subset)
-- ALU: `add`, `addi`, `sub`, `and`, `or`, `nor`, `slt`
-- Memory: `lw`, `sw`
-- Branch: `beq`
+## ⚙️ Features
 
-> Notes  
-> - `nop` is typically `sll $zero,$zero,0`, but this branch does not rely on `sll` control.  
-> - With **no forwarding/hazard unit**, software scheduling (or NOPs) is required for correctness.
-
----
-
-## Directory Layout 
-cpu.v \
-instr_mem.v \
-data_mem.v \
-reg_file.v \
-ctrl_main.v  
-ctrl_alu.v \
-alu32.v \
-branch_adder.v \
-pipe_if_id.v \
-pipe_id_ex.v \
-pipe_ex_mem.v \
-pipe_mem_wb.v \
-cpu_tb.v \
-Makefile \
-README.md \
-memory/ \
-&nbsp;&nbsp;&nbsp;&nbsp;program.hex # machine code executed by instr_mem \
-&nbsp;&nbsp;&nbsp;&nbsp;program.asm # assembly version of program.hex \
-&nbsp;&nbsp;&nbsp;&nbsp;memory_dump.hex # data memory dump at end of sim 
-
-  > Notes  
-> These codes are not necessarily optimized for efficiency.  
-> Instead, each unit is separated into its own file to make the design easier to understand.
-
-
+- **Classic 5 pipeline stages:** IF → ID → EX → MEM → WB  
+- **Branch decision** handled in the **EX** stage  
+  → Misprediction causes a **2-cycle flush** (IF/ID and ID/EX)  
+- **Data forwarding** between EX/MEM/WB stages to reduce stalls  
+- **Testbench** dumps VCD waveform and data memory contents automatically  
+- **Modular design:** each unit (ALU, control, hazard, forwarding, etc.) is implemented in a separate file  
 
 ---
 
-## Initialization & Memory
-- **Register file** (`reg_file`) sets some **initial register values** (for convenience in tests).
-- **Instruction memory** loads **`program.hex`** via `$readmemh`.
-- **Data memory** is dumped to **`memory_dump.hex`** at the end of simulation via `$writememh`.
+##  Supported Instructions (Subset)
 
+| Type | Instructions |
+|------|---------------|
+| **ALU** | `add`, `addi`, `sub`, `and`, `or`, `nor`, `slt`, `sll` |
+| **Memory** | `lw`, `sw` |
+| **Branch** | `beq` |
 
 ---
 
-## Build & Run
-**Makefile targets:**
+##  Initialization & Memory
+
+- **Register file (`reg_file.v`)**  
+  - Contains predefined register values for easier testing.  
+  - You can modify initial values directly inside `reg_file.v`.
+
+- **Instruction memory**  
+  - Loads programs from `program.hex` using `$readmemh` in `instr_mem.v`. 
+  - Example files: `program1.hex`, `program2.hex`, `program3.hex`  
+  - Human-readable decoded versions: `program1.txt`, `program2.txt`, `program3.txt` (in `memory/` folder)
+  - **Please implement this in `instr_mem.v`.**
+
+
+
+- **Data memory**  
+  - Dumped automatically to `memory_dump.hex` at the end of simulation via `$writememh`.
+
+---
+
+##  Build & Run
 
 ```bash
 make         # build with iverilog
 make run     # run with vvp
-make wave    # open VCD with GTKWave
+make wave    # open VCD file with GTKWave
 make clean   # remove build artifacts
 ```
-
-
----
-
 
 ## Verified tools
 - **Icarus Verilog runtime**: 12.0 (stable)  
 - **GTKWave**: v3.4.0 (w)1999–2022 BSI
 
-## Sample Program (from `program.hex`)
-20090002 addi $t1,$zero,2 \
-012A5820 add $t3,$t1,$t2 \
-018D5822 sub $t3,$t4,$t5 \
-01F87024 and $t6,$t7,$t8 \
-012AC825 or $t9,$t1,$t2 \
-AD090000 sw $t1,0($t0) \
-8D180000 lw $t8,0($t0) \
-2129FFFF addi $t1,$t1,-1 \
-2318000A addi $t8,$t8,10 \
-11200002 beq $t1,$zero,+2 \
-1000FFF6 beq $zero,$zero,-10 
 
 
-**Behavior:** uses `$t1` as a loop counter; loop body executes **exactly 2 times**, then exits.
+## 📘 Notes  
+> These codes are not necessarily optimized for efficiency.
+Each unit is implemented in a modular and readable manner for clarity.
+Refer to the pipeline diagram for the big picture.
 
-## Pipeline Caveats (`basic_pipeline`)
-- **No hazard unit:** ensure **≥ 2 independent instructions** between producer and consumer.
-  - RAW (reg write → next reads)
-  - **load-use** (`lw` → next uses): keep at least **2 cycles** of separation
-- **Branch decision in MEM:** flush **IF/ID** (and usually **ID/EX**) on taken branches.
-- Consider adding a **reset (`rst`)** and initializing **IMEM to NOPs** to get clean first fetches.
+> Based on Computer Organization and Design, MIPS Edition
+by David A. Patterson & John L. Hennessy (5th Edition).
+
+
 
