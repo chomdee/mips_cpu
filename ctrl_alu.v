@@ -14,6 +14,7 @@ module ctrl_alu (
             2'b10: begin               // R-type → decided by funct_ex
                 case (funct_ex)
                     6'b000000: ctrl_aluctrl_ex = 4'b1000; // sll
+                    6'b011010: ctrl_aluctrl_ex = 4'b1001; // div --> not the exact way 
                     6'b100000: ctrl_aluctrl_ex = 4'b0010; // add
                     6'b100010: ctrl_aluctrl_ex = 4'b0110; // sub
                     6'b100100: ctrl_aluctrl_ex = 4'b0000; // and

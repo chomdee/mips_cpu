@@ -61,6 +61,6 @@ module cpu_tb;
     initial begin
         $dumpfile("build/cpu_tb.vcd");
         $dumpvars(0, cpu_tb);
-        #2000 $finish; 
+        #5000 $finish; 
     end
 endmodule

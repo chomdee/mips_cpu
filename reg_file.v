@@ -6,7 +6,9 @@ module reg_file (
     input [4:0] rs_id, rt_id, writereg_wb, // the register numbers to read & write
     input [31:0] datatowritereg, // the data to write
     input ctrl_regwrite_wb, // the write control signal
-    output [31:0] readdata1_id, readdata2_id
+
+    output [31:0] readdata1_id, readdata2_id,
+    output [31:0] cp0_writedata
 );
     reg [31:0] RF [31:0]; // 2D register file
 
@@ -15,14 +17,14 @@ module reg_file (
         
         // example first settings
         // using program.hex to operate
-        RF[8] = 32'd3; // $t0
+        RF[8] = 32'd24; // $t0
         RF[9]  = 32'd0; // $t1
-        RF[10] = 32'd3; // $t2
+        RF[10] = 32'd0; // $t2
         RF[11] = 32'd10; // $t3
-        RF[12] = 32'd100; // $t4
-        RF[13] = 32'd7;  // $t5
+        RF[12] = 32'd10; // $t4
+        RF[13] = 32'd0;  // $t5
         RF[14] = 32'd0; // $t6
-        RF[15] = 32'hFFFF00FF; // $t7
+        RF[15] = 32'd0; // $t7
         RF[24] = 32'h0F0F0F0F; // $t8
     end
 

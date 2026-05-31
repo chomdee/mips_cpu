@@ -11,7 +11,7 @@ module data_mem (
     output [31:0] readdata_mem // data that read
 );
 
-    reg [31:0] memory [255:0];
+    reg [31:0] memory [0:255];
     
     initial begin
         #2000; // time of program finish

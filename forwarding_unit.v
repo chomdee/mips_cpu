@@ -1,3 +1,6 @@
+`timescale 1ns/1ps
+`default_nettype none
+
 module forwarding_unit (
     input [4:0] rs_ex,
     input [4:0] rt_ex,

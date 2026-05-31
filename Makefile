@@ -16,7 +16,7 @@ TB   := cpu_tb.v
 SRCS := cpu.v instr_mem.v data_mem.v reg_file.v ctrl_alu.v branch_adder.v \
         pipe_ex_mem.v pipe_id_ex.v pipe_if_id.v instr_decoder.v ctrl_main.v \
         pipe_mem_wb.v alu32.v sext16to32.v forwarding_unit.v hazard_detection_unit.v \
-		mux_flush.v mux_operand1.v mux_operand2.v
+		mux_operand1.v mux_operand2.v cp0.v exc_arbiter.v
 
 
 # ---- rules ----
