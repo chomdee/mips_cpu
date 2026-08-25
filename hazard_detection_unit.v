@@ -26,7 +26,6 @@ module hazard_detection_unit (
     reg ctrl_nop;
 
     initial begin
-
         ctrl_nop = 0;
         pc_write = 1; 
         ifid_write = 1;

@@ -46,7 +46,7 @@ module ctrl_main (
                 case(rs_id) 
                     5'b00000: begin // mfc0
                         ctrl_regwrite = 1; 
-                        ctrl_regdst = 0; // select where to write
+                        ctrl_regdst = 0; // select where to write   
                         ctrl_wbsrc = 2'b10; // select data to write
                     end
                     5'b00100: begin // mtc0
@@ -54,7 +54,7 @@ module ctrl_main (
                     end
                     5'b10000: begin
                         case(funct_id)
-                            6'b011000: begin
+                            6'b011000: begin // eret
                                 is_eret = 1;
                             end
                         endcase

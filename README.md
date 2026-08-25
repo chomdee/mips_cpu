@@ -15,7 +15,7 @@ Hardware exception handling logic has been added to support OS-level control, al
   * *Future Plan:* The handler address is planned to be updated to the MIPS standard kernel exception vector (`0x80000180`) in future iterations.
   * *Implementation:* Instead of relying on an external assembler, the routing and branching logic is currently hardcoded directly in raw machine code (Hex) acting as a "human assembler" with inline comments (e.g., `401B6800 // mfc0 $k1, $13 (Cause)`). 
 * **System Instructions:** Added decoding and datapath routing for `mfc0`, `mtc0`, and `eret`.
-* **Synchronous Exception Test:** Successfully simulated a `div` divide-by-zero trap, routed it to a specific handler, and safely returned to the user program (`PC+4`) via `eret`.
+* **Synchronous Exception Test:** Successfully simulated a `div` divide-by-zero trap, routed it to a specific handler, and safely returned to the user program (`PC`) via `eret`.
 
 * **Reference:** For the full raw machine code implementation and layout of this exception test, please refer to the **`dvibyzero_with_exc.hex`** file.
 
@@ -23,9 +23,11 @@ Hardware exception handling logic has been added to support OS-level control, al
 ---
 
 ## 🏗️ Pipeline Overview
-> **※ Note:** The diagram below represents the **v1.0 Base Architecture** (pure ALU/Branch pipeline). The current v2.0 includes additional CP0 blocks and PC multiplexing routing for exception (`eret`) handling built on top of this foundation.
+> **※ Note:** Previously, only the pipeline diagram (v1.0 Base Architecture — pure ALU/Branch pipeline) was included. This has now been extended to v2.0 with the **CP0 and Exception Arbiter diagram**, which handles exception (`eret`) detection, cause/PC capture, and pipeline flush signaling on top of the base pipeline.
 
 ![Pipeline Diagram](pipeline_diagram.png)
+
+![CP0 and Exception Arbiter](CP0_and_exc_arbiter.png)
 
 ---
 
@@ -75,6 +77,6 @@ make wave    # open VCD file with GTKWave
 make clean   # remove build artifacts
 ```
 
-### 💡 Engineering Note: 
+### 💡 Engineering Note (in Korean): 
 
-🔗 **Detailed Notes:** [](여기에_티스토리_해당글_링크_붙여넣기)
+🔗 **Detailed Notes:** [chomdee's blog](https://chomdee.tistory.com/18)

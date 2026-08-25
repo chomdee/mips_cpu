@@ -35,12 +35,10 @@ module cp0 (
     always @(*) begin
         if (exception_req) begin
             // handler_pc = 32'h8000_0180; // default handler
-            handler_pc = 32'h0000_0030;
-        
-        end else begin
-            handler_pc = 32'd0; 
-        end
+            handler_pc = 32'h0000_0030; 
+        end 
 
+        
         case (cp0_addr)
             5'd13: cp0_readdata = cause;
             5'd14: cp0_readdata = epc;
