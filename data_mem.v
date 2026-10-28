@@ -12,11 +12,6 @@ module data_mem (
 );
 
     reg [31:0] memory [0:255];
-    
-    initial begin
-        #2000; // time of program finish
-        $writememh("memory/memory_dump.hex", uut.u_dmem.memory);
-    end
 
     assign readdata_mem = (ctrl_memread_mem) ? memory[aluout_mem[9:2]] : 32'd0;
 

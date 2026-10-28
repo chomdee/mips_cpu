@@ -58,9 +58,16 @@ module cpu_tb;
         $display("time=%0t pc=%h instr=%h", $time, uut.pc_if, uut.instr);
     end
 
+    // 데이터 메모리 덤프. 원래 data_mem.v 안에 있었는데,
+    // 설계 모듈이 테스트벤치 스코프(uut)를 참조하면 합성이 안 돼서 여기로 옮김.
+    initial begin
+        #2000; // time of program finish
+        $writememh("memory/memory_dump.hex", uut.u_dmem.memory);
+    end
+
     initial begin
         $dumpfile("build/cpu_tb.vcd");
         $dumpvars(0, cpu_tb);
-        #5000 $finish; 
+        #5000 $finish;
     end
 endmodule
