@@ -2,12 +2,12 @@
 `default_nettype none
 
 module forwarding_unit (
-    input [4:0] rs_ex,
-    input [4:0] rt_ex,
-    input [4:0] writereg_mem,
-    input [4:0] writereg_wb,
-    input ctrl_regwrite_mem,
-    input ctrl_regwrite_wb,
+    input wire [4:0] rs_ex,
+    input wire [4:0] rt_ex,
+    input wire [4:0] writereg_mem,
+    input wire [4:0] writereg_wb,
+    input wire ctrl_regwrite_mem,
+    input wire ctrl_regwrite_wb,
 
     output reg [1:0] forwardA,
     output reg [1:0] forwardB

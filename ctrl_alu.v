@@ -2,8 +2,8 @@
 `default_nettype none
 
 module ctrl_alu (
-    input  [1:0] ctrl_aluop_ex,
-    input  [5:0] funct_ex,
+    input wire [1:0] ctrl_aluop_ex,
+    input wire [5:0] funct_ex,
     output reg [3:0] ctrl_aluctrl_ex
 );
 

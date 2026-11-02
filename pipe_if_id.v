@@ -2,12 +2,12 @@
 `default_nettype none
 
 module pipe_if_id (
-    input clk,
-    input final_flush_if_id,
+    input wire clk,
+    input wire final_flush_if_id,
 
-    input ifid_write,
-    input [31:0] pc_plus4_if,
-    input [31:0] instr_if,
+    input wire ifid_write,
+    input wire [31:0] pc_plus4_if,
+    input wire [31:0] instr_if,
 
     output reg [31:0] pc_plus4_id,
     output reg [31:0] instr_id

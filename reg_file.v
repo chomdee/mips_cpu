@@ -2,13 +2,13 @@
 `default_nettype none
 
 module reg_file (
-    input clk,
-    input [4:0] rs_id, rt_id, writereg_wb, // the register numbers to read & write
-    input [31:0] datatowritereg, // the data to write
-    input ctrl_regwrite_wb, // the write control signal
+    input wire clk,
+    input wire [4:0] rs_id, rt_id, writereg_wb, // the register numbers to read & write
+    input wire [31:0] datatowritereg, // the data to write
+    input wire ctrl_regwrite_wb, // the write control signal
 
-    output [31:0] readdata1_id, readdata2_id,
-    output [31:0] cp0_writedata
+    output wire [31:0] readdata1_id, readdata2_id,
+    output wire [31:0] cp0_writedata
 );
     reg [31:0] RF [31:0]; // 2D register file
 

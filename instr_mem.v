@@ -2,7 +2,7 @@
 `default_nettype none
 
 module instr_mem (
-    input [31:0] pc_if,
+    input wire [31:0] pc_if,
     output reg [31:0] instr_if
 );
 

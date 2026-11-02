@@ -2,26 +2,26 @@
 `default_nettype none
 
 module hazard_detection_unit (
-    input ctrl_memread_ex,
-    input [4:0] rs_id, rt_id, rt_ex,
+    input wire ctrl_memread_ex,
+    input wire [4:0] rs_id, rt_id, rt_ex,
 
-    input branch_taken_ex,
+    input wire branch_taken_ex,
 
-    input exception_req,
-    input exc_flush_if_id,
-    input exc_flush_id_ex,
-    input exc_flush_ex_mem,
-    input exc_flush_mem_wb,
+    input wire exception_req,
+    input wire exc_flush_if_id,
+    input wire exc_flush_id_ex,
+    input wire exc_flush_ex_mem,
+    input wire exc_flush_mem_wb,
 
-    input is_eret,
+    input wire is_eret,
 
     output reg pc_write,
     output reg ifid_write,
 
-    output final_flush_if_id,
-    output final_flush_id_ex,
-    output final_flush_ex_mem,
-    output final_flush_mem_wb
+    output wire final_flush_if_id,
+    output wire final_flush_id_ex,
+    output wire final_flush_ex_mem,
+    output wire final_flush_mem_wb
 );  
     reg ctrl_nop;
 

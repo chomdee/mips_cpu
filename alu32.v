@@ -2,13 +2,13 @@
 `default_nettype none
 
 module alu32 (
-    input [3:0] ctrl_aluctrl_ex, 
-    input [31:0] operand1, operand2, 
-    input [4:0] shamt_ex, 
+    input wire [3:0] ctrl_aluctrl_ex, 
+    input wire [31:0] operand1, operand2, 
+    input wire [4:0] shamt_ex, 
 
     output reg [31:0] aluout_ex, 
-    output ctrl_zero_ex,
-    output div_by_zero_ex
+    output wire ctrl_zero_ex,
+    output wire div_by_zero_ex
 );
 
     assign ctrl_zero_ex = (aluout_ex==0);

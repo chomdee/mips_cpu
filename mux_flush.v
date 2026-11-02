@@ -2,16 +2,16 @@
 `default_nettype none
 
 module mux_flush (
-    input ctrl_flush_id_ex,
-    input ctrl_regdst,
-    input ctrl_jump,
-    input ctrl_branch,
-    input ctrl_memread,
-    input ctrl_memtoreg,
-    input ctrl_memwrite,
-    input ctrl_alusrc,
-    input ctrl_regwrite,
-    input [1:0] ctrl_aluop,
+    input wire ctrl_flush_id_ex,
+    input wire ctrl_regdst,
+    input wire ctrl_jump,
+    input wire ctrl_branch,
+    input wire ctrl_memread,
+    input wire ctrl_memtoreg,
+    input wire ctrl_memwrite,
+    input wire ctrl_alusrc,
+    input wire ctrl_regwrite,
+    input wire [1:0] ctrl_aluop,
 
     output reg ctrl_regdst_id,
     output reg ctrl_jump_id,

@@ -2,8 +2,8 @@
 `default_nettype none
 
 module branch_adder (
-    input [31:0] imm32_ex,
-    input [31:0] pc_plus4_ex,
+    input wire [31:0] imm32_ex,
+    input wire [31:0] pc_plus4_ex,
 
     output reg [31:0] branch_target_ex
 );

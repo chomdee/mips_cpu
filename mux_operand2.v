@@ -2,10 +2,10 @@
 `default_nettype none
 
 module mux_operand2 (
-    input [1:0] forwardB,
-    input [31:0] readdata2_ex,
-    input [31:0] datatowritereg,
-    input [31:0] aluout_mem,
+    input wire [1:0] forwardB,
+    input wire [31:0] readdata2_ex,
+    input wire [31:0] datatowritereg,
+    input wire [31:0] aluout_mem,
 
     output reg [31:0] operand2_forwarded
 );

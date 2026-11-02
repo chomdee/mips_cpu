@@ -2,16 +2,16 @@
 `default_nettype none
 
 module pipe_ex_mem (
-    input clk,
-    input final_flush_ex_mem,
+    input wire clk,
+    input wire final_flush_ex_mem,
 
-    input ctrl_memread_ex, ctrl_memwrite_ex, ctrl_regwrite_ex, cp0_write_ex,
-    input [1:0] ctrl_wbsrc_ex,
-    input [31:0] aluout_ex,
-    input [31:0] writedata_ex,
-    input [4:0] writereg_ex,
-    input [4:0] rd_ex,
-    input [4:0] rt_ex,
+    input wire ctrl_memread_ex, ctrl_memwrite_ex, ctrl_regwrite_ex, cp0_write_ex,
+    input wire [1:0] ctrl_wbsrc_ex,
+    input wire [31:0] aluout_ex,
+    input wire [31:0] writedata_ex,
+    input wire [4:0] writereg_ex,
+    input wire [4:0] rd_ex,
+    input wire [4:0] rt_ex,
 
     output reg ctrl_memread_mem, ctrl_memwrite_mem, ctrl_regwrite_mem, cp0_write_mem,
     output reg [1:0] ctrl_wbsrc_mem,

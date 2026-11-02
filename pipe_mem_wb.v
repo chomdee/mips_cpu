@@ -2,16 +2,16 @@
 `default_nettype none
 
 module pipe_mem_wb (
-    input clk,
-    input final_flush_mem_wb,
+    input wire clk,
+    input wire final_flush_mem_wb,
 
-    input ctrl_regwrite_mem,
-    input [1:0] ctrl_wbsrc_mem, 
-    input [31:0] readdata_mem,
-    input [31:0] aluout_mem, // data writing to register
-    input [4:0] writereg_mem,
-    input [4:0] rd_mem,
-    input [31:0] cp0_readdata_mem,
+    input wire ctrl_regwrite_mem,
+    input wire [1:0] ctrl_wbsrc_mem, 
+    input wire [31:0] readdata_mem,
+    input wire [31:0] aluout_mem, // data writing to register
+    input wire [4:0] writereg_mem,
+    input wire [4:0] rd_mem,
+    input wire [31:0] cp0_readdata_mem,
 
     output reg ctrl_regwrite_wb,
     output reg [1:0] ctrl_wbsrc_wb,

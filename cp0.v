@@ -7,10 +7,10 @@ module cp0 (
     input wire [31:0] cause_in,
     input wire [31:0] faulting_pc,
 
-    input [4:0] cp0_addr, // $rd regsiter
-    input [31:0] cp0_writedata, // the data to write (mtc0)
+    input wire [4:0] cp0_addr, // $rd regsiter
+    input wire [31:0] cp0_writedata, // the data to write (mtc0)
     
-    input cp0_write_mem, // the write control signal
+    input wire cp0_write_mem, // the write control signal
 
 
     output reg [31:0] cp0_readdata, // the data to read (mfc0)

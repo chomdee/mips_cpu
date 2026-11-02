@@ -2,13 +2,13 @@
 `default_nettype none
 
 module data_mem (
-    input clk,
-    input ctrl_memread_mem,
-    input ctrl_memwrite_mem,
-    input [31:0] aluout_mem,
-    input [31:0] writedata_mem, // data to write
+    input wire clk,
+    input wire ctrl_memread_mem,
+    input wire ctrl_memwrite_mem,
+    input wire [31:0] aluout_mem,
+    input wire [31:0] writedata_mem, // data to write
 
-    output [31:0] readdata_mem // data that read
+    output wire [31:0] readdata_mem // data that read
 );
 
     reg [31:0] memory [0:255];

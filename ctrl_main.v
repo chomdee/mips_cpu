@@ -2,9 +2,9 @@
 `default_nettype none
 
 module ctrl_main (
-    input  [5:0] opcode_id,
-    input  [4:0] rs_id,
-    input  [5:0] funct_id, 
+    input wire [5:0] opcode_id,
+    input wire [4:0] rs_id,
+    input wire [5:0] funct_id, 
 
     output reg   ctrl_regdst,
     output reg   ctrl_jump,
