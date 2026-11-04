@@ -433,7 +433,6 @@ module cpu (
     // 16) co-procsessor 0
 
     wire [31:0] cp0_readdata; 
-    wire [31:0] cp0_writedata;
     wire [31:0] handler_pc;
     wire [31:0] epc;
 

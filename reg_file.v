@@ -7,8 +7,7 @@ module reg_file (
     input wire [31:0] datatowritereg, // the data to write
     input wire ctrl_regwrite_wb, // the write control signal
 
-    output wire [31:0] readdata1_id, readdata2_id,
-    output wire [31:0] cp0_writedata
+    output wire [31:0] readdata1_id, readdata2_id
 );
     reg [31:0] RF [31:0]; // 2D register file
 
