@@ -14,7 +14,7 @@ module cp0 (
 
 
     output reg [31:0] cp0_readdata, // the data to read (mfc0)
-    output reg [31:0] handler_pc,
+    output wire [31:0] handler_pc,
     output reg [31:0] epc
 );
     reg [31:0] cause;
@@ -32,18 +32,14 @@ module cp0 (
         end
     end
 
-    always @(*) begin
-        if (exception_req) begin
-            // handler_pc = 32'h8000_0180; // default handler
-            handler_pc = 32'h0000_0030; 
-        end 
+    assign handler_pc = 32'h0000_0030;
 
-        
+    always @(*) begin
         case (cp0_addr)
             5'd13: cp0_readdata = cause;
             5'd14: cp0_readdata = epc;
             default: cp0_readdata = 32'h00000000;
         endcase
-    end
+    end 
     
 endmodule
