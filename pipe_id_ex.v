@@ -66,6 +66,7 @@ module pipe_id_ex (
             readdata2_ex <= 0;
             imm32_ex <= 0;
             funct_ex <= 0;
+            shamt_ex <= 0;
             
             rt_ex <= 0;
             rd_ex <= 0;
@@ -87,6 +88,7 @@ module pipe_id_ex (
             readdata2_ex <= readdata2_id;
             imm32_ex <= imm32_id;
             funct_ex <= funct_id;
+            shamt_ex <= shamt_id;
             
             rt_ex <= rt_id;
             rd_ex <= rd_id;
