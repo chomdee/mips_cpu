@@ -22,9 +22,9 @@ module alu32 (
                 4'b0001: aluout_ex = operand1 | operand2;
                 4'b0010: aluout_ex = operand1 + operand2;
                 4'b0110: aluout_ex = operand1 - operand2;
-                4'b0111: aluout_ex = operand1 < operand2 ? 1 : 0; // slt
+                4'b0111: aluout_ex = $signed(operand1) < $signed(operand2) ? 1 : 0; // slt
                 4'b1000: aluout_ex = operand2 << shamt_ex; // sll
-                4'b1001: aluout_ex = operand1 / operand2;
+                4'b1001: aluout_ex = $signed(operand1) / $signed(operand2); // simplified version of div
                 4'b1100: aluout_ex = ~(operand1 | operand2); // nor
                 default: aluout_ex = 0;
             endcase
