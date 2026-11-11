@@ -350,7 +350,7 @@ module cpu (
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // 14) data memory 
 
-    assign writedata_ex = readdata2_ex;
+    assign writedata_ex = operand2_forwarded;
 
     data_mem u_dmem (
         .clk(clk),
