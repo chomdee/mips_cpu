@@ -16,9 +16,9 @@ module reg_file (
         
         // example first settings
         // using program.hex to operate
-        RF[8] = 32'd24; // $t0
-        RF[9]  = 32'd0; // $t1
-        RF[10] = 32'd0; // $t2
+        RF[8] = 32'd0; // $t0
+        RF[9]  = 32'd1; // $t1
+        RF[10] = -32'd1; // $t2
         RF[11] = 32'd10; // $t3
         RF[12] = 32'd10; // $t4
         RF[13] = 32'd0;  // $t5
@@ -27,13 +27,12 @@ module reg_file (
         RF[24] = 32'h0F0F0F0F; // $t8
     end
 
-    assign readdata1_id = RF[rs_id];
-    assign readdata2_id = RF[rt_id];
+    assign readdata1_id = (ctrl_regwrite_wb && (writereg_wb == rs_id) && (writereg_wb != 5'd0)) ? datatowritereg : RF[rs_id];
+    assign readdata2_id = (ctrl_regwrite_wb && (writereg_wb == rt_id) && (writereg_wb != 5'd0)) ? datatowritereg : RF[rt_id];
 
     always @(posedge clk) begin    
         if (ctrl_regwrite_wb && (writereg_wb != 5'd0)) begin
             RF[writereg_wb] <= datatowritereg; 
-        end     
+        end
     end
-
 endmodule
