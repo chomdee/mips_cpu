@@ -3,6 +3,7 @@
 
 module pipe_if_id (
     input wire clk,
+    input wire rst,
     input wire final_flush_if_id,
 
     input wire ifid_write,
@@ -12,13 +13,13 @@ module pipe_if_id (
     output reg [31:0] pc_plus4_id,
     output reg [31:0] instr_id
 );
-    initial begin
-        pc_plus4_id = 0;
-        instr_id = 0;
-    end
 
     always @(posedge clk) begin
-        if(final_flush_if_id) begin
+        if(rst) begin
+            pc_plus4_id <= 0;
+            instr_id <= 0;
+        end
+        else if(final_flush_if_id) begin
             pc_plus4_id <= 32'd0;
             instr_id <= 32'd0;
         end

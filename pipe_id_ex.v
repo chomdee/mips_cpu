@@ -3,6 +3,7 @@
 
 module pipe_id_ex (
     input wire clk,
+    input wire rst,
     input wire final_flush_id_ex,
 
     input wire ctrl_regdst_id, ctrl_branch_id, ctrl_memread_id, ctrl_memwrite_id, ctrl_alusrc_id, ctrl_regwrite_id, cp0_write_id,
@@ -23,51 +24,28 @@ module pipe_id_ex (
     output reg [4:0] shamt_ex,
     output reg [4:0] rt_ex, rd_ex, rs_ex
 );
-    initial begin
-        ctrl_regdst_ex = 0;
-        ctrl_branch_ex = 0;
-        ctrl_memread_ex = 0;
-        ctrl_memwrite_ex = 0;
-        ctrl_alusrc_ex = 0;
-        ctrl_regwrite_ex = 0;
-        cp0_write_ex = 0;
-
-        ctrl_wbsrc_ex = 0;
-        ctrl_aluop_ex = 0;
-
-        pc_plus4_ex = 0;
-        readdata1_ex = 0;
-        readdata2_ex = 0;
-
-        imm32_ex = 0;
-        funct_ex = 0;
-        shamt_ex = 0;
-
-        rt_ex = 0;
-        rd_ex = 0;
-        rs_ex = 0;
-    end
 
     always @(posedge clk) begin
-        if (final_flush_id_ex) begin
+        if (rst || final_flush_id_ex) begin
             ctrl_regdst_ex <= 0;
             ctrl_branch_ex <= 0;
             ctrl_memread_ex <= 0;
-            ctrl_wbsrc_ex <= 0;
-            ctrl_aluop_ex <= 0;
             ctrl_memwrite_ex <= 0;
             ctrl_alusrc_ex <= 0;
             ctrl_regwrite_ex <= 0;
             cp0_write_ex <= 0;
 
-            pc_plus4_ex <= 0;
+            ctrl_wbsrc_ex <= 0;
+            ctrl_aluop_ex <= 0;
 
+            pc_plus4_ex <= 0;
             readdata1_ex <= 0;
             readdata2_ex <= 0;
+
             imm32_ex <= 0;
             funct_ex <= 0;
             shamt_ex <= 0;
-            
+
             rt_ex <= 0;
             rd_ex <= 0;
             rs_ex <= 0;

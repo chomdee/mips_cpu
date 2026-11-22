@@ -3,11 +3,13 @@
 
 module cpu_tb;
     reg clk;
+    reg rst;
     wire [31:0] instr;
 
     // CPU instance
     cpu uut (
         .clk(clk),
+        .rst(rst),
         .instr(instr)
     );
 
@@ -47,11 +49,15 @@ module cpu_tb;
     wire [31:0] RF30 = uut.u_rf.RF[30];  // $fp/$s8
     wire [31:0] RF31 = uut.u_rf.RF[31];  // $ra
 
-
-
     initial begin
         clk = 0;
         forever #50 clk = ~clk;  
+    end
+
+    initial begin
+        rst = 1;
+        #120;
+        rst = 0;
     end
 
     always @(posedge clk) begin
@@ -61,8 +67,12 @@ module cpu_tb;
     // 데이터 메모리 덤프. 원래 data_mem.v 안에 있었는데,
     // 설계 모듈이 테스트벤치 스코프(uut)를 참조하면 합성이 안 돼서 여기로 옮김.
     initial begin
-        #2000; // time of program finish
+        #4000; // time of program finish
+        $display("rf10=%h", RF10);
+        $display("rf12=%h", RF12);
+        $display("rf14=%h", RF14);
         $writememh("memory/memory_dump.hex", uut.u_dmem.memory);
+
     end
 
     initial begin

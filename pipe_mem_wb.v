@@ -3,6 +3,7 @@
 
 module pipe_mem_wb (
     input wire clk,
+    input wire rst,
     input wire final_flush_mem_wb,
 
     input wire ctrl_regwrite_mem,
@@ -23,7 +24,7 @@ module pipe_mem_wb (
 );
 
     always @(posedge clk) begin
-        if (final_flush_mem_wb) begin
+        if (rst || final_flush_mem_wb) begin
             ctrl_wbsrc_wb <= 0;
             ctrl_regwrite_wb <= 0;
 

@@ -3,6 +3,7 @@
 
 module cpu (
     input wire clk,
+    input wire rst,
     output wire [31:0] instr
 );
 
@@ -10,10 +11,6 @@ module cpu (
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // 1) pc
-
-    initial begin
-        pc_if = RESET_PC;
-    end
 
     localparam [31:0] RESET_PC       = 32'h0000_0000;  // starting address
     localparam        PCSRC_PLUS4    = 2'd0;
@@ -41,7 +38,9 @@ module cpu (
                         pc_plus4_if;
 
     always @(posedge clk) begin
-        if (pc_write) 
+        if(rst)
+            pc_if <= RESET_PC;
+        else if (pc_write) 
             pc_if <= next_pc_if;
     end
 
@@ -70,6 +69,7 @@ module cpu (
 
     pipe_if_id u_ifid (
         .clk(clk),
+        .rst(rst),
         .final_flush_if_id(final_flush_if_id),
 
         .ifid_write(ifid_write),
@@ -200,6 +200,7 @@ module cpu (
 
     pipe_id_ex u_idex (
         .clk(clk),
+        .rst(rst),
         .final_flush_id_ex(final_flush_id_ex),
 
         .ctrl_regdst_id(ctrl_regdst), .ctrl_branch_id(ctrl_branch), .ctrl_memread_id(ctrl_memread), .ctrl_memwrite_id(ctrl_memwrite), .ctrl_alusrc_id(ctrl_alusrc), .ctrl_regwrite_id(ctrl_regwrite), .cp0_write_id(cp0_write),
@@ -326,6 +327,7 @@ module cpu (
 
     pipe_ex_mem u_exmem (
         .clk(clk),
+        .rst(rst),
         .final_flush_ex_mem(final_flush_ex_mem),
 
         .ctrl_memread_ex(ctrl_memread_ex), .ctrl_memwrite_ex(ctrl_memwrite_ex), .ctrl_regwrite_ex(ctrl_regwrite_ex), .cp0_write_ex(cp0_write_ex),
@@ -371,6 +373,7 @@ module cpu (
 
     pipe_mem_wb u_memwb (
         .clk(clk),
+        .rst(rst),
         .final_flush_mem_wb(final_flush_mem_wb),
 
         .ctrl_regwrite_mem(ctrl_regwrite_mem),
@@ -438,6 +441,7 @@ module cpu (
 
     cp0 u_cp0(
         .clk(clk),
+        .rst(rst),
         .exception_req(exception_req),
         .cause_in(cause),
         .faulting_pc(faulting_pc),

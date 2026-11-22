@@ -3,6 +3,7 @@
 
 module cp0 (
     input wire clk,
+    input wire rst,
     input wire exception_req,
     input wire [31:0] cause_in,
     input wire [31:0] faulting_pc,
@@ -21,7 +22,10 @@ module cp0 (
 
 
     always @(posedge clk) begin
-        if(exception_req) begin
+        if (rst) begin
+            cause <= 0;
+            epc <= 0;
+        end else if(exception_req) begin
             cause <= cause_in;
             epc <= faulting_pc;
         end else if (cp0_write_mem) begin 

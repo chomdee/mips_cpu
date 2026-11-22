@@ -3,6 +3,7 @@
 
 module pipe_ex_mem (
     input wire clk,
+    input wire rst,
     input wire final_flush_ex_mem,
 
     input wire ctrl_memread_ex, ctrl_memwrite_ex, ctrl_regwrite_ex, cp0_write_ex,
@@ -22,7 +23,7 @@ module pipe_ex_mem (
     output reg [4:0] rt_mem
 );
     always @(posedge clk) begin
-        if(final_flush_ex_mem) begin
+        if(rst || final_flush_ex_mem) begin
             ctrl_memread_mem <= 0;
             ctrl_wbsrc_mem <= 0;
             ctrl_memwrite_mem <= 0;
